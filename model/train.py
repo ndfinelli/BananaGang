@@ -2,20 +2,44 @@ from cnn import bananaCNN
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm # Displays a progress bar
-
+import cv2
+import os
 import torch
 from torch import nn
 from torch import optim
 import torch.nn.functional as F
 from torchvision import datasets, transforms
 from torch.utils.data import Dataset, Subset, DataLoader, random_split
-
-
+from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
 
 def load_banana_data():
     ### TODO ### 
     ### Load in banana dataset, set up train and validation dataloaders
-    pass
+    
+    X = []
+    Y = []
+    for root, dirs, files in os.walk('../bananaPics'):
+        for directory in dirs:
+            for file in os.listdir('../bananaPics/'+ directory):
+                img = cv2.imread('../bananaPics/'+ directory + '/' + file)
+                img = cv2.resize(img, (480, 270))
+                X.append(img)
+                Y.append(int(directory[0]))
+
+
+    X = np.asarray(X)
+    Y = np.asarray(Y)
+    X, Y = shuffle(X,Y, random_state=0)
+
+    np.save('image_data.npy', X)
+    np.save('labels.npy', Y)
+    
+    X = np.load('image_data.npy')
+    Y = np.load('labels.npy')
+    X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=.20)
+    
+    return X_train, X_val, Y_train, Y_val
 
 
 
@@ -55,3 +79,6 @@ criterion = nn.CrossEntropyLoss() # Specify the loss layer
 # TODO: Modify the line below, experiment with different optimizers and parameters (such as learning rate)
 optimizer = optim.Adam(model.parameters(), lr=1e-2, weight_decay=1e-4) # Specify optimizer and assign trainable parameters to it, weight_decay is L2 regularization strength
 num_epoch = 15 # TODO: Choose an appropriate number of training epochs
+
+
+load_banana_data()
