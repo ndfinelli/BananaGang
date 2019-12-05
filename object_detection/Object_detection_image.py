@@ -144,7 +144,7 @@ cv2.imshow('Object detector', frame)
 
 if 52 not in classes[0]:
     print("No banana in image")
-    #else:
+else:
     print("Run banana model with image")
     
     # Crop image
