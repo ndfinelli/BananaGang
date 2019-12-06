@@ -22,6 +22,28 @@ transform = transforms.Compose([
     transforms.Normalize([0.1307], [0.3081])
 ])
 
+def load_new_bananas(input_size):
+    X = []
+    Y = []
+
+    for root, dirs, files in os.walk('../new_bananas/'):
+        for directory in dirs:
+            for file in os.listdir('../new_bananas/'+directory):
+                x = cv2.imread('../fayoum_data/'+directory+'/'+file)
+                img = cv2.resize(x, (input_size, input_size))
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
+
+                X.append(img)
+                if directory == 'banana_green':
+                    Y.append(0)
+                elif directory == 'banana_semi_green':
+                    Y.append(1)
+                elif directory == 'banana_kinda_brown' or directory == 'banana_kinda2ripe':
+                    Y.append(2)
+                elif directory == 'banana_brown' or directory == 'banana_brown0':
+                    Y.append(3)
+
+
 
 def load_fayoum_data(input_size):
     X = []
@@ -31,7 +53,9 @@ def load_fayoum_data(input_size):
         for directory in dirs:
             for file in os.listdir('../fayoum_data/'+directory):
                 x = cv2.imread('../fayoum_data/'+directory+'/'+file)
+                x = cv2.cvtColor(x, cv2.COLOR_RGB2LAB)
                 img = cv2.resize(x, (input_size, input_size))
+
                 X.append(img)
 
                 if directory == 'Green':
@@ -52,6 +76,7 @@ def load_our_banana_data(input_size):
         for directory in dirs:
             for file in os.listdir('../bananaPics/'+ directory):
                 img = cv2.imread('../bananaPics/'+ directory + '/' + file)
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
                 #img = cv2.resize(img, (480, 270))
                 img = cv2.resize(img, (input_size, input_size))
                 X.append(img)
@@ -70,7 +95,7 @@ def load_data(input_size, isFayoum=False):
     X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=.30)
     return X_train, X_val, Y_train, Y_val
 
-def train(model, loader, num_epoch = 10): # Train the model
+def train(model, loader, optimizer, num_epoch = 10): # Train the model
     print("Start training...")
     model.train() # Set the model to training mode
     for i in range(num_epoch):
@@ -198,17 +223,19 @@ num_classes = 4
 device = "cuda" if torch.cuda.is_available() else "cpu" # Configure device
 model, input_size = get_model('squeezenet', num_classes)
 
+model_1, input_size = get_model('squeezenet', 3)
+
 model_fayoum = model.to(device)
 
 
-model = get_model('scratch', num_classes)
+#model = get_model('scratch', num_classes)
 
-model_banana = model.to(device)
+model_banana = model_1.to(device)
 
 
 criterion = nn.CrossEntropyLoss() # Specify the loss layer
 # TODO: Modify the line below, experiment with different optimizers and parameters (such as learning rate)
-optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4) # Specify optimizer and assign trainable parameters to it, weight_decay is L2 regularization strength
+optimizer_fayoum = optim.Adam(model_fayoum.parameters(), lr=1e-3, weight_decay=1e-4) # Specify optimizer and assign trainable parameters to it, weight_decay is L2 regularization strength
 num_epoch = 15 # TODO: Choose an appropriate number of training epochs
 
 
@@ -234,14 +261,16 @@ trainloader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 testloader = DataLoader(test_dataset, batch_size=8, shuffle=True)
 
 
-optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4) # Specify optimizer and assign trainable parameters to it, weight_decay is L2 regularization strength
+optimizer_banana = optim.Adam(model_banana.parameters(), lr=1e-3, weight_decay=1e-4) # Specify optimizer and assign trainable parameters to it, weight_decay is L2 regularization strength
 num_epoch = 15 # TODO: Choose an appropriate number of training epochs
 
 
-train(model_fayoum, trainloader, num_epoch=10)
-train(model_banana, trainloader, num_epoch=10)
+train(model_fayoum, trainloader, optimizer_fayoum, num_epoch=3)
+train(model_banana, trainloader, optimizer_banana, num_epoch=3)
 
-evaluate(model, testloader)
+evaluate(model_fayoum, testloader_f)
+
+evaluate(model_banana, testloader)
 
 
 
