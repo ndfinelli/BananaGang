@@ -1,7 +1,7 @@
 import smtplib
 
-smtpUser = "aremybananasbrown@gmail.com"
-smtpPass = "banana1234!"
+smtpUser = "brownbanana1234@gmail.com"
+smtpPass = "oveawleewhsvgzsg"
 
 # Address we want to send the email to
 toAdd = "ndfinelli@gmail.com" 
