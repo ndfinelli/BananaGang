@@ -25,7 +25,7 @@ transform = transforms.Compose([
 def load_new_bananas(input_size):
     X = []
     Y = []
-
+    print('new bananas')
     for root, dirs, files in os.walk('../new_bananas/'):
         for directory in dirs:
             for file in os.listdir('../new_bananas/'+directory):
@@ -42,6 +42,8 @@ def load_new_bananas(input_size):
                     Y.append(2)
                 elif directory == 'banana_brown' or directory == 'banana_brown0':
                     Y.append(3)
+
+    return X, Y
 
 
 
@@ -87,7 +89,7 @@ def load_our_banana_data(input_size):
 def load_data(input_size, isFayoum=False):
     ### TODO ### 
     ### Load in banana dataset, set up train and validation dataloaders
-    X, Y = load_fayoum_data(input_size) if isFayoum else load_our_banana_data(input_size)
+    X, Y = load_fayoum_data(input_size) if isFayoum else load_new_bananas(input_size)
     X = np.asarray(X)
     Y = np.asarray(Y)
     X, Y = shuffle(X,Y, random_state=0)
@@ -202,14 +204,14 @@ def initialize_model(model_name, num_classes):
     return model_ft, input_size
 
 
-def normalize(X_train, X_val):
-    X_train = X_train.transpose((0,3,1,2))
-    X_train = (X_train - np.mean(X_train)) / np.std(X_train)
+def normalize(train, val):
+    train = train.transpose((0,3,1,2))
+    train = (train - np.mean(train)) / np.std(train)
 
-    X_val = X_val.transpose((0,3,1,2))
+    val = val.transpose((0,3,1,2))
 
-    X_val = (X_val - np.mean(X_val)) / np.std(X_val)
-    return X_train, X_val
+    val = (val - np.mean(val)) / np.std(val)
+    return train, val
 
 def get_model(model_name, num_classes):
     if model_name != 'scratch':
@@ -217,61 +219,3 @@ def get_model(model_name, num_classes):
     else:
         return bananaCNN(num_classes)
 
-num_classes = 4
-
-
-device = "cuda" if torch.cuda.is_available() else "cpu" # Configure device
-model, input_size = get_model('squeezenet', num_classes)
-
-model_1, input_size = get_model('squeezenet', 3)
-
-model_fayoum = model.to(device)
-
-
-#model = get_model('scratch', num_classes)
-
-model_banana = model_1.to(device)
-
-
-criterion = nn.CrossEntropyLoss() # Specify the loss layer
-# TODO: Modify the line below, experiment with different optimizers and parameters (such as learning rate)
-optimizer_fayoum = optim.Adam(model_fayoum.parameters(), lr=1e-3, weight_decay=1e-4) # Specify optimizer and assign trainable parameters to it, weight_decay is L2 regularization strength
-num_epoch = 15 # TODO: Choose an appropriate number of training epochs
-
-
-X_train_f, X_val_f, Y_train_f, Y_val_f = load_data(input_size, isFayoum=True)
-X_train, X_val, Y_train, Y_val = load_data(input_size)
-
-X_train, X_val = normalize(X_train, X_val)
-X_train_f, X_val_f = normalize(X_train_f, X_val_f)
-
-print('test size', X_val.shape)
-''' Initialize Fayoum datasets'''
-train_dataset_f = utils.TensorDataset(torch.FloatTensor(X_train_f), torch.LongTensor(Y_train_f))
-test_dataset_f = utils.TensorDataset(torch.FloatTensor(X_val_f), torch.LongTensor(Y_val_f))
-
-trainloader_f = DataLoader(train_dataset_f, batch_size=8, shuffle=True)
-testloader_f = DataLoader(test_dataset_f, batch_size=8, shuffle=True)
-
-''' Initialize Our datasets'''
-train_dataset = utils.TensorDataset(torch.FloatTensor(X_train), torch.LongTensor(Y_train))
-test_dataset = utils.TensorDataset(torch.FloatTensor(X_val), torch.LongTensor(Y_val))
-
-trainloader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-testloader = DataLoader(test_dataset, batch_size=8, shuffle=True)
-
-
-optimizer_banana = optim.Adam(model_banana.parameters(), lr=1e-3, weight_decay=1e-4) # Specify optimizer and assign trainable parameters to it, weight_decay is L2 regularization strength
-num_epoch = 15 # TODO: Choose an appropriate number of training epochs
-
-
-train(model_fayoum, trainloader, optimizer_fayoum, num_epoch=3)
-train(model_banana, trainloader, optimizer_banana, num_epoch=3)
-
-evaluate(model_fayoum, testloader_f)
-
-evaluate(model_banana, testloader)
-
-
-
-## Cross evaluation
