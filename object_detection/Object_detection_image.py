@@ -127,7 +127,7 @@ print(boxes)
 #print(print(category_index)
 
 # Draw the results of the detection (aka 'visulaize the results')
-vis_util.visualize_boxes_and_labels_on_image_array(
+"""vis_util.visualize_boxes_and_labels_on_image_array(
     frame,
     np.squeeze(boxes),
     np.squeeze(classes).astype(np.int32),
@@ -141,14 +141,14 @@ cv2.putText(frame,"FPS: {0:.2f}".format(frame_rate_calc),(30,50),font,1,(255,255
 
 # All the results have been drawn on the frame, so it's time to display it.
 cv2.imshow('Object detector', frame)
-
+"""
 if 52 not in classes[0]:
     print("No banana in image")
 else:
     print("Run banana model with image")
     
     # Crop image
-    ymin, xmin, ymax, xmax = np.squeeze(boxes)[0]
+    ymin, xmin, ymax, xmax = np.squeeze(boxes)[np.where(classes == 52)[0]]
     image_pil = Image.fromarray(np.uint8(frame)).convert('RGB')
     im_width, im_height = image_pil.size
     (left, right, top, bottom) = (xmin * im_width, xmax * im_width,
