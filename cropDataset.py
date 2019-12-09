@@ -1,5 +1,6 @@
 from bananaCropper import crop_image
 import os
+import cv2
 
 for root, dirs, files in os.walk('new_bananas/'):
 	for directory in dirs:
