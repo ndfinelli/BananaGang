@@ -35,5 +35,5 @@ def takePic():
     frame.setflags(write=1)
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    crop_image(frame_rgb, 'cropped.png')
+    return crop_image(frame_rgb, 'cropped.png')
 

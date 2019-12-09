@@ -115,6 +115,7 @@ def crop_image(frame_rgb, filename):
     # Draw the results of the detection (aka 'visulaize the results')
     if 52 not in classes[0]:
         print("No banana in image")
+        return False
     else:
         print("Run banana model with image")
         
@@ -127,6 +128,7 @@ def crop_image(frame_rgb, filename):
         
         pad_and_save(image_pil, im_width, im_height, left, top, right, bottom, filename)
         
+        return True
         #cropped_img = image_pil.crop((left, top, right, bottom))
         #cropped_img.save(filename)
         #print(np.array(cropped_img).shape)
