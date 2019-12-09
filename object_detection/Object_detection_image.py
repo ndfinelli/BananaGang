@@ -97,12 +97,6 @@ detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
 # Number of objects detected
 num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
-# Initialize frame rate calculation
-frame_rate_calc = 1
-freq = cv2.getTickFrequency()
-font = cv2.FONT_HERSHEY_SIMPLEX
-
-
 # Set up Camera
 camera = PiCamera()
 camera.resolution = (IM_WIDTH,IM_HEIGHT)
@@ -127,29 +121,11 @@ print(boxes)
 #print(print(category_index)
 
 # Draw the results of the detection (aka 'visulaize the results')
-"""vis_util.visualize_boxes_and_labels_on_image_array(
-    frame,
-    np.squeeze(boxes),
-    np.squeeze(classes).astype(np.int32),
-    np.squeeze(scores),
-    category_index,
-    use_normalized_coordinates=True,
-    line_thickness=8,
-    min_score_thresh=0.40)
-
-cv2.putText(frame,"FPS: {0:.2f}".format(frame_rate_calc),(30,50),font,1,(255,255,0),2,cv2.LINE_AA)
-
-# All the results have been drawn on the frame, so it's time to display it.
-cv2.imshow('Object detector', frame)
-"""
 if 52 not in classes[0]:
     print("No banana in image")
 else:
     print("Run banana model with image")
     
-    # print(np.where(classes == 52)[0][0])
-    print(type(frame))
-    print(frame.shape)
     cv2.imshow('frame', frame)
     ymin, xmin, ymax, xmax = np.squeeze(boxes)[np.where(classes == 52)[0][0]]
     image_pil = Image.fromarray(np.uint8(frame_rgb))
