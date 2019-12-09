@@ -2,8 +2,8 @@
 import os
 import cv2
 import numpy as np
-from picamera.array import PiRGBArray
-from picamera import PiCamera
+#from picamera.array import PiRGBArray
+#from picamera import PiCamera
 import tensorflow as tf
 import argparse
 import sys
@@ -52,7 +52,7 @@ category_index = label_map_util.create_category_index(categories)
 detection_graph = tf.Graph()
 with detection_graph.as_default():
     od_graph_def = tf.GraphDef()
-    with tf.gfile.GFile(PATH_TO_CKPT, 'rb') as fid:
+    with tf.io.gfile.GFile(PATH_TO_CKPT, 'rb') as fid:
         serialized_graph = fid.read()
         od_graph_def.ParseFromString(serialized_graph)
         tf.import_graph_def(od_graph_def, name='')
@@ -109,8 +109,9 @@ def crop_image(frame_rgb, filename):
     feed_dict={image_tensor: frame_expanded})
 
     #print(classes)
-    print(boxes)
+    #print(boxes)
     #print(print(category_index)
+    print(filename)
 
     # Draw the results of the detection (aka 'visulaize the results')
     if 52 not in classes[0]:
@@ -124,7 +125,7 @@ def crop_image(frame_rgb, filename):
         im_width, im_height = image_pil.size
         (left, right, top, bottom) = (xmin * im_width, xmax * im_width,
                                       ymin * im_height, ymax * im_height)
-        print(left, right, top, bottom)
+        #print(left, right, top, bottom)
         
         pad_and_save(image_pil, im_width, im_height, left, top, right, bottom, filename)
         
