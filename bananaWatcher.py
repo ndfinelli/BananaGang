@@ -1,5 +1,4 @@
 from sendEmail import *
-from object_dection.Object_dection_image import func_name
 from takePhoto import takePic
 
 address2sendEmail2 = "ndfinelli@gmail.com"
