@@ -1,6 +1,6 @@
 import smtplib
 
-def sendEmail(address2send2, subject= "Are my bananas brown yet?", body):
+def sendEmail(address2send2, subject= "Are my bananas brown yet?", body=""):
   smtpUser = "brownbanana1234@gmail.com"
   smtpPass = "oveawleewhsvgzsg"
 
