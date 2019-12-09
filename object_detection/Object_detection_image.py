@@ -127,7 +127,7 @@ print(boxes)
 #print(print(category_index)
 
 # Draw the results of the detection (aka 'visulaize the results')
-vis_util.visualize_boxes_and_labels_on_image_array(
+"""vis_util.visualize_boxes_and_labels_on_image_array(
     frame,
     np.squeeze(boxes),
     np.squeeze(classes).astype(np.int32),
@@ -141,15 +141,18 @@ cv2.putText(frame,"FPS: {0:.2f}".format(frame_rate_calc),(30,50),font,1,(255,255
 
 # All the results have been drawn on the frame, so it's time to display it.
 cv2.imshow('Object detector', frame)
-
+"""
 if 52 not in classes[0]:
     print("No banana in image")
 else:
     print("Run banana model with image")
     
-    # Crop image
-    ymin, xmin, ymax, xmax = np.squeeze(boxes)[0]
-    image_pil = Image.fromarray(np.uint8(frame)).convert('RGB')
+    # print(np.where(classes == 52)[0][0])
+    print(type(frame))
+    print(frame.shape)
+    cv2.imshow('frame', frame)
+    ymin, xmin, ymax, xmax = np.squeeze(boxes)[np.where(classes == 52)[0][0]]
+    image_pil = Image.fromarray(np.uint8(frame_rgb))
     im_width, im_height = image_pil.size
     (left, right, top, bottom) = (xmin * im_width, xmax * im_width,
                                   ymin * im_height, ymax * im_height)
@@ -157,11 +160,9 @@ else:
     
     cropped_img = image_pil.crop((left, top, right, bottom))
     cropped_img.save("cropped.png")
+    print(np.array(cropped_img).shape)
     #cv2.imshow('cropped', image_pil)
 
-while True:
-    if cv2.waitKey(1) == ord('q'):
-        break
 
 camera.close()
 
