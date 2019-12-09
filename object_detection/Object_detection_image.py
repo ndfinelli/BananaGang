@@ -147,9 +147,12 @@ if 52 not in classes[0]:
 else:
     print("Run banana model with image")
     
-    # Crop image
-    ymin, xmin, ymax, xmax = np.squeeze(boxes)[np.where(classes == 52)[0]]
-    image_pil = Image.fromarray(np.uint8(frame)).convert('RGB')
+    # print(np.where(classes == 52)[0][0])
+    print(type(frame))
+    print(frame.shape)
+    cv2.imshow('frame', frame)
+    ymin, xmin, ymax, xmax = np.squeeze(boxes)[np.where(classes == 52)[0][0]]
+    image_pil = Image.fromarray(np.uint8(frame_rgb))
     im_width, im_height = image_pil.size
     (left, right, top, bottom) = (xmin * im_width, xmax * im_width,
                                   ymin * im_height, ymax * im_height)
@@ -157,11 +160,9 @@ else:
     
     cropped_img = image_pil.crop((left, top, right, bottom))
     cropped_img.save("cropped.png")
+    print(np.array(cropped_img).shape)
     #cv2.imshow('cropped', image_pil)
 
-while True:
-    if cv2.waitKey(1) == ord('q'):
-        break
 
 camera.close()
 
