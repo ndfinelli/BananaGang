@@ -15,8 +15,8 @@ from sklearn.model_selection import train_test_split
 import torch.utils.data as utils
 from PIL import Image
 
-
-
+device = "cuda" if torch.cuda.is_available() else "cpu" # Configure device
+criterion = nn.CrossEntropyLoss()
 
 transform = transforms.Compose([
     transforms.Normalize([0.1307], [0.3081])
@@ -24,21 +24,21 @@ transform = transforms.Compose([
 
 def load_new_bananas(input_size):
     X = []
-    Y = []
-    print('new bananas')
+    Y = []    
     for root, dirs, files in os.walk('../new_bananas/'):
         for directory in dirs:
+            print(directory)
             for file in os.listdir('../new_bananas/'+directory):
-                x = cv2.imread('../fayoum_data/'+directory+'/'+file)
+                x = cv2.imread('../new_bananas/'+directory+'/'+file)
                 img = cv2.resize(x, (input_size, input_size))
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
 
                 X.append(img)
-                if directory == 'banana_green':
+                if directory == 'banana_green' or directory == 'banana_green0':
                     Y.append(0)
-                elif directory == 'banana_semi_green':
+                elif directory == 'banana_semi_green' or directory == 'banana_semi_green0':
                     Y.append(1)
-                elif directory == 'banana_kinda_brown' or directory == 'banana_kinda2ripe':
+                elif directory == 'banana_kinda_brown0' or directory == 'banana_kinda2ripe':
                     Y.append(2)
                 elif directory == 'banana_brown' or directory == 'banana_brown0':
                     Y.append(3)
@@ -79,7 +79,6 @@ def load_our_banana_data(input_size):
             for file in os.listdir('../bananaPics/'+ directory):
                 img = cv2.imread('../bananaPics/'+ directory + '/' + file)
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
-                #img = cv2.resize(img, (480, 270))
                 img = cv2.resize(img, (input_size, input_size))
                 X.append(img)
                 Y.append(int(directory[0]))
@@ -94,8 +93,7 @@ def load_data(input_size, isFayoum=False):
     Y = np.asarray(Y)
     X, Y = shuffle(X,Y, random_state=0)
 
-    X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=.30)
-    return X_train, X_val, Y_train, Y_val
+    return X, Y
 
 def train(model, loader, optimizer, num_epoch = 10): # Train the model
     print("Start training...")
@@ -219,3 +217,8 @@ def get_model(model_name, num_classes):
     else:
         return bananaCNN(num_classes)
 
+def combine_datasets(X1, Y1, X2, Y2):
+    X = np.concatenate((X1, X2))
+    Y = np.concatenate((Y1, Y2))
+
+    return X, Y
