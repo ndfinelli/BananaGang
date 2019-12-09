@@ -1,4 +1,5 @@
-import sendEmail *
+from sendEmail import *
+from object_dection.Object_dection_image import func_name
 
 address2sendEmail2 = "ndfinelli@gmail.com"
 subject = "Banana Watcher - output"
