@@ -79,6 +79,7 @@ num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
 
 def crop_image(frame_rgb, filename):
+    frame_expanded = np.expand_dims(frame_rgb, axis=0)
     (boxes, scores, classes, num) = sess.run(
     [detection_boxes, detection_scores, detection_classes, num_detections],
     feed_dict={image_tensor: frame_expanded})

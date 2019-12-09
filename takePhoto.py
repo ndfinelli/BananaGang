@@ -34,7 +34,6 @@ def takePic():
     frame = np.copy(rawCapture.array)
     frame.setflags(write=1)
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame_expanded = np.expand_dims(frame_rgb, axis=0)
 
     crop_image(frame_rgb, 'cropped.png')
 
