@@ -79,28 +79,28 @@ num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
 
 def crop_image(frame_rgb, filename):
-	(boxes, scores, classes, num) = sess.run(
+    (boxes, scores, classes, num) = sess.run(
     [detection_boxes, detection_scores, detection_classes, num_detections],
     feed_dict={image_tensor: frame_expanded})
 
-	#print(classes)
-	print(boxes)
-	#print(print(category_index)
+    #print(classes)
+    print(boxes)
+    #print(print(category_index)
 
-	# Draw the results of the detection (aka 'visulaize the results')
-	if 52 not in classes[0]:
-    	print("No banana in image")
-	else:
-	    print("Run banana model with image")
-	    
-	    ymin, xmin, ymax, xmax = np.squeeze(boxes)[np.where(classes == 52)[0][0]]
-	    image_pil = Image.fromarray(np.uint8(frame_rgb))
-	    im_width, im_height = image_pil.size
-	    (left, right, top, bottom) = (xmin * im_width, xmax * im_width,
-	                                  ymin * im_height, ymax * im_height)
-	    print(left, right, top, bottom)
-	    
-	    cropped_img = image_pil.crop((left, top, right, bottom))
-	    cropped_img.save(filename)
-	    print(np.array(cropped_img).shape)
-	    #cv2.imshow('cropped', image_pil)
+    # Draw the results of the detection (aka 'visulaize the results')
+    if 52 not in classes[0]:
+        print("No banana in image")
+    else:
+        print("Run banana model with image")
+        
+        ymin, xmin, ymax, xmax = np.squeeze(boxes)[np.where(classes == 52)[0][0]]
+        image_pil = Image.fromarray(np.uint8(frame_rgb))
+        im_width, im_height = image_pil.size
+        (left, right, top, bottom) = (xmin * im_width, xmax * im_width,
+                                      ymin * im_height, ymax * im_height)
+        print(left, right, top, bottom)
+        
+        cropped_img = image_pil.crop((left, top, right, bottom))
+        cropped_img.save(filename)
+        print(np.array(cropped_img).shape)
+        #cv2.imshow('cropped', image_pil)
