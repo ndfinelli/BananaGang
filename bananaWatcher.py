@@ -28,7 +28,7 @@ brown_responses = ["You've got bad bananas :(    Guess we better make some banan
 					"Brown bananas - Fruit Flies are inbound, toss them before infestation!",
 					"It's gonna be a no for me dawg... these bananas are bad"]
 
-bananaResponses = np.array(green_responses, semi_green_responses, semi_brown_responses, brown_responses)
+bananaResponses = np.array((green_responses, semi_green_responses, semi_brown_responses, brown_responses))
 
 def loadBananaImg():
 	img = cv2.imread('cropped.png')
