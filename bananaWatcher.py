@@ -27,8 +27,7 @@ if there_is_banana_in_image:
 		output = model.forward([img])
 		_, pred = output.max(dim=1)
 
-	sendEmail( address2sendEmail2, subject, bananaResponses[pred])
-	# Run image through the model
+	sendEmail( address2sendEmail2, subject, bananaResponses[pred[0]])
 
 else:
 	sendEmail( address2sendEmail2, subject, "You are out of bananas bro... ")
