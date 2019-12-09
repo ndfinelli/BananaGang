@@ -5,7 +5,7 @@ import cv2
 import random
 import numpy as np
 
-address2sendEmail2 = "ndfinelli@gmail.com"
+address2sendEmail2 = "brownbanana1234@gmail.com"
 subject = "Banana Watcher - output"
 
 green_responses = ["Bananas are fairly green, you should wait a hot sec before consumption",
