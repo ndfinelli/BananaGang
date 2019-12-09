@@ -8,7 +8,7 @@ import tensorflow as tf
 import argparse
 import sys
 from matplotlib.image import imread
-from PIL import Image
+from PIL import Image, ImageOps
 
 # Set up camera constants
 IM_WIDTH = 1280
@@ -77,6 +77,30 @@ detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
 # Number of objects detected
 num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
+def pad_and_save(img, im_width, im_height, left, top, right, bottom, filename):
+    padded_img = ImageOps.expand(img, (100,100,100,100))
+    left += 100
+    top += 100
+    right += 100
+    bottom += 100
+
+    width = right - left
+    height = bottom - top
+    if width > height:
+        if top + width > im_height:
+            cropped_img = padded_img.crop((left, bottom-width, right, bottom))
+            cropped_img.save(filename)
+        else:
+            cropped_img = padded_img.crop((left, top, right, top+width))
+            cropped_img.save(filename)
+    else:
+        if left + height > im_width:
+            cropped_img = padded_img.crop((right-height, top, right, bottom))
+            cropped_img.save(filename)
+        else:
+            cropped_img = padded_img.crop((left, top, left+height, bottom))
+            cropped_img.save(filename)
+
 
 def crop_image(frame_rgb, filename):
     frame_expanded = np.expand_dims(frame_rgb, axis=0)
@@ -101,7 +125,14 @@ def crop_image(frame_rgb, filename):
                                       ymin * im_height, ymax * im_height)
         print(left, right, top, bottom)
         
-        cropped_img = image_pil.crop((left, top, right, bottom))
-        cropped_img.save(filename)
-        print(np.array(cropped_img).shape)
+        pad_and_save(image_pil, im_width, im_height, left, top, right, bottom, filename)
+        
+        #cropped_img = image_pil.crop((left, top, right, bottom))
+        #cropped_img.save(filename)
+        #print(np.array(cropped_img).shape)
         #cv2.imshow('cropped', image_pil)
+
+
+
+
+
