@@ -10,7 +10,7 @@ def set_parameter_requires_grad(model):
     for param in model.parameters():
         param.requires_grad = False
 
-img = cv2.imread('cropped.png')
+img = cv2.imread('cropped.jpg')
 img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
 img = (img - np.mean(img)) / np.std(img)
 img = cv2.resize(img, (224,224))
