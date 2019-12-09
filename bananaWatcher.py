@@ -32,7 +32,7 @@ bananaResponses = np.array(green_responses, semi_green_responses, semi_brown_res
 
 def loadBananaImg():
 	img = cv2.imread('cropped.png')
-	img = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
+	img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
 	img = (img - np.mean(img)) / np.std(img)
 	img = cv2.resize(img, (224,224))
 	img = np.array(img)
@@ -43,7 +43,7 @@ def loadBananaImg():
 there_is_banana_in_image = takePic()
 
 if there_is_banana_in_image:
-	model = torch.load("saved_models/combined_model.pickle")
+	model = torch.load("saved_models/new_bananas.pickle")
 	with torch.no_grad():
 		img = loadBananaImg()
 		input = torch.FloatTensor([img])
