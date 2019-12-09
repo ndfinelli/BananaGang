@@ -14,6 +14,7 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 import torch.utils.data as utils
 from PIL import Image
+from sklearn.metrics import f1_score
 
 device = "cuda" if torch.cuda.is_available() else "cpu" # Configure device
 criterion = nn.CrossEntropyLoss()
@@ -31,7 +32,7 @@ def load_new_bananas(input_size):
             for file in os.listdir('../new_bananas/'+directory):
                 x = cv2.imread('../new_bananas/'+directory+'/'+file)
                 img = cv2.resize(x, (input_size, input_size))
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
 
                 X.append(img)
                 if directory == 'banana_green' or directory == 'banana_green0':
@@ -55,18 +56,18 @@ def load_fayoum_data(input_size):
         for directory in dirs:
             for file in os.listdir('../fayoum_data/'+directory):
                 x = cv2.imread('../fayoum_data/'+directory+'/'+file)
-                x = cv2.cvtColor(x, cv2.COLOR_RGB2LAB)
+                x = cv2.cvtColor(x, cv2.COLOR_BGR2LAB)
                 img = cv2.resize(x, (input_size, input_size))
 
                 X.append(img)
 
                 if directory == 'Green':
                     Y.append(0)
-                elif directory == 'Midripen':
-                    Y.append(1)
-                elif directory == 'Overripen':
-                    Y.append(2)
                 elif directory == 'Yellowish_Green':
+                    Y.append(1)
+                elif directory == 'Midripen':
+                    Y.append(2)
+                elif directory == 'Overripen':
                     Y.append(3)
 
     return X, Y
@@ -78,7 +79,7 @@ def load_our_banana_data(input_size):
         for directory in dirs:
             for file in os.listdir('../bananaPics/'+ directory):
                 img = cv2.imread('../bananaPics/'+ directory + '/' + file)
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
                 img = cv2.resize(img, (input_size, input_size))
                 X.append(img)
                 Y.append(int(directory[0]))
@@ -95,7 +96,7 @@ def load_data(input_size, isFayoum=False):
 
     return X, Y
 
-def train(model, loader, optimizer, num_epoch = 10): # Train the model
+def train(model, loader, optimizer, val_loader=None, num_epoch = 10): # Train the model
     print("Start training...")
     model.train() # Set the model to training mode
     for i in range(num_epoch):
@@ -110,7 +111,10 @@ def train(model, loader, optimizer, num_epoch = 10): # Train the model
             loss.backward() # Backprop gradients to all tensors in the network
             optimizer.step() # Update trainable weights
         print("Epoch {} loss:{}".format(i+1,np.mean(running_loss))) # Print the average loss for this epoch
+        if val_loader is not None:
+            evaluate(model, val_loader)
     print("Done!")
+
 
 def evaluate(model, loader): # Evaluate accuracy on validation / test set
     model.eval() # Set the model to evaluation mode
@@ -222,3 +226,7 @@ def combine_datasets(X1, Y1, X2, Y2):
     Y = np.concatenate((Y1, Y2))
 
     return X, Y
+
+def get_f1_score(model, X, Y):
+    y_pred = model(X)
+    return f1_score(Y, y_pred)
