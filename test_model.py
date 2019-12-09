@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-from torchvision import models
 import cv2
 import random
 import numpy as np
